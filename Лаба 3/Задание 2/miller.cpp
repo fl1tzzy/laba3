@@ -7,7 +7,7 @@
 #include <algorithm>
 
 using namespace std;
-
+//Решето Эратосфена
 vector<int> primes(int n);
 pair<int, vector<int>> builder_test(vector<int> prime, int bit);
 int test_millera(int n, int t, vector<int> q);
@@ -64,7 +64,7 @@ int main() {
 
     print_results(res, res_ver_test, otvegnutie);
 }
-
+//вектор простых чисел
 vector<int> primes(int n) {
     vector<bool> is_prime(n + 1, true);
     vector<int> primes;
@@ -83,28 +83,32 @@ vector<int> primes(int n) {
 
     return primes;
 }
-
+// построение числа n
 pair<int, vector<int>> builder_test(vector<int> prime, int bit) {
     int max_index = 0;
     int max_pow = 1;
-
+// запоминание самого большого числа в векторе
     for (; (prime[max_index] < pow(2, bit - 1)) && max_index < prime.size(); max_index++);
+    //запоминание самой большой степени в векторе(для двойки)
     for (; pow(2, max_pow) < pow(2, bit - 1); max_pow++);
     
     int m = 1;
     vector<int> q;
-
+    //строится число m 
     while(true){
+        // рандомное число из решета эратосфена
         int num = rn(0, max_index);
+        // рандомное степень из пром от 1 до макс
         int power = rn(1, max_pow);
         
         if (pow(prime[num], power)) {
             if(m * pow(prime[num], power) < INT32_MAX) {
+                // проверка м на переполненность
                 m *= pow(prime[num], power);
                 q.push_back(prime[num]);
             }
         }
-
+    // проверка на то является ли число подходящим под усл. бит-1
         if(m > pow(2, bit - 2)){
 
             if(m >= pow(2, bit - 1)){
@@ -117,12 +121,12 @@ pair<int, vector<int>> builder_test(vector<int> prime, int bit) {
             }
         }
     }
-
+// инициализация числа н
     int n = 2 * m + 1;
 
     return make_pair(n, q);
 }
-
+// строится числа а в зависимости от фактора доверия(t)
 int test_millera(int n, int t, vector<int> q) {
     vector<int> a;
     int aj;
@@ -141,7 +145,7 @@ int test_millera(int n, int t, vector<int> q) {
             break;
         }
     }
-
+// тест миллера(по усл)
     bool flag = true;
     int i = 0;
     for (int aj : a) {
@@ -159,7 +163,7 @@ int test_millera(int n, int t, vector<int> q) {
 
     return 1;
 }
-
+// модуль в н-ной степени
 int power_mod(int a, int b, int n) {
     long long result = 1;
     while (b > 0) {
@@ -170,7 +174,7 @@ int power_mod(int a, int b, int n) {
     }
     return result;
 }
-
+// реализация рандомайзера
 int rn(int a, int b) {
     mt19937 mt_rand(random_device{}());
     return uniform_int_distribution<int>(a, b)(mt_rand);
