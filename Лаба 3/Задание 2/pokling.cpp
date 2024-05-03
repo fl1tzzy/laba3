@@ -87,7 +87,7 @@ vector<int> primes(int n) {
 pair<int, vector<int>> builder_test(vector<int> prime, int bit) {
     int max_index = 0;
     int max_pow = 1;
-
+// число ф должно содержать 6 бит
     for (; (prime[max_index] < pow(2, (bit / 2) + 1)) && (max_index < prime.size()); max_index++);
     for (; pow(2, max_pow) < pow(2, (bit / 2) + 1); max_pow++);
     
