@@ -1,6 +1,43 @@
 import random
 import math
 
+def test_miller(n, c, t):
+    n1 = n - 1
+    delit = []
+    for i in range(len(c)):
+        if n1 == 0 or c[i] > n1:
+            break
+        if n1 % c[i] == 0:
+            delit.append(c[i])
+            while n1 % c[i] == 0 and n1 != 0:
+                n1 = n1 // c[i]
+    a = []
+    while len(a) != t:
+        ai = random.randint(2, n)
+        if ai not in a:
+            a.append(ai)
+    for ai in a:
+        res = ai % n
+        for _ in range(2, n):
+            res *= ai
+            res = res % n
+        if res != 1:
+            return " - составное число", 0
+
+    for d in delit:
+        flag = True
+        for ai in a:
+            res = ai % n
+            for _ in range(2, (n - 1) // d + 1):
+                res = ai * res
+                res = res % n
+            if res != 1:
+                flag = False
+                break
+        if flag:
+            return " - вероятно, составное число", 0
+    return " - простое число", 1
+
 def resheto(n):
     all_numbers = list(range(2, n + 1))
     primes = []
@@ -10,75 +47,40 @@ def resheto(n):
         all_numbers = [x for x in all_numbers if x % current_prime != 0]
     return primes
 
-def rn(a, n):
-    return random.randint(a, n)
-
-def test_pokling(n, delit, t):
-    a = []
-    while len(a) != t:
-        ai = rn(2, n - 1)
-        if ai not in a:
-            a.append(ai)
-    for ai in a:
-        res = ai % n
-        for _ in range(2, n):
-            res = res * ai
-            res = res % n
-        if res != 1:
-            return " - составное число", 0
-    n32 = n - 1
-    for j in a:
-        for d in delit:
-            prom = n32 // d
-            res2 = j % n
-            for _ in range(2, prom + 1):
-                res2 = res2 * j
-                res2 = res2 % n
-            if res2 == 1:
-                break
-        else:
-            return " - простое число", 1
-    return " - вероятно, составное число", 0
-
-def build_pokling(bit, c, t):
-    glim = 0
+def build_miller(bit, c, t):
     while True:
+        glim = 0
         z = 1
         f = True
         geted = []
-        delit = []
         while f and len(geted) < 1:
             z = 1
-            delitt = []
             for i in range(len(c)):
-                if c[i] > pow(2, bit // 2 + 1) - 1:
+                if c[i] > pow(2, bit - 1) - 1:
                     break
-                max_val = int(math.log(pow(2, bit // 2 + 1), c[i]))
-                rpow = rn(1, max_val)
-                rnum = rn(0, rpow + 1)
+                max_val = int(math.log(pow(2, bit - 1), c[i]))
+                rpow = random.randint(1, max_val)
+                rnum = random.randint(0, rpow)
                 z *= pow(c[i], rnum)
-                if z > pow(2, bit // 2):
+                if z > pow(2, bit - 1) - 1:
                     z //= pow(c[i], rnum)
-                    if z >= pow(2, bit // 2):
+                    if z >= pow(2, bit - 2):
                         if z not in geted:
                             geted.append(z)
                         z = 1
                         f = False
-                        delit = delitt[:]
-                else:
-                    if rnum:
-                        delitt.append(c[i])
-        n = rn(pow(2, bit // 2 - 1), pow(2, bit // 2) - 1) * geted[0] + 1
-        resultat = test_pokling(n, delit, t)
+        m = random.choice(geted)
+        n = 2 * m - 1
+        resultat = test_miller(n, c, t)
         oleg = ''
         if resultat[1] == 1:
-            res = test_pokling(n, c, 1)
-            if res[1] == 1:
-                oleg = '+'
-            else:
+            res = test_miller(n, c, 1)
+            if res[1] == 0:
                 oleg = '-'
+            else:
+                oleg = "+"
         else:
-            res = test_pokling(n, c, 1)
+            res = test_miller(n, c, 1)
             if res[1] == 1:
                 glim += 1
         if resultat[1] == 1:
@@ -87,15 +89,14 @@ def build_pokling(bit, c, t):
 def main():
     bit = int(input("Введите количество бит: "))
     c = resheto(500)
-    pokling_res = []
-    pokling_res_p = []
-    test_pokling(13, [2], 10)
-    while len(pokling_res_p) != 10:
-        pokling_result = build_pokling(bit, c, 10)
-        p = pokling_result[1]
-        if p not in pokling_res_p:
-            pokling_res_p.append(p)
-            pokling_res.append(pokling_result)
+    miller_res = []
+    miller_res_p = []
+    while len(miller_res) != 10:
+        miller_result = build_miller(bit, c, 10)
+        p = miller_result[1]
+        if p not in miller_res_p:
+            miller_res_p.append(p)
+            miller_res.append(miller_result)
     print("+", end="")
     for _ in range(10):
         print("--------+", end="")
@@ -107,19 +108,19 @@ def main():
         print("--------+", end="")
     print("\n|", end="")
     for i in range(10):
-        print(f"{pokling_res[i][1]:8}|", end="")
+        print(f"{miller_res[i][1]:8}|", end="")
     print("\n+", end="")
     for _ in range(10):
         print("--------+", end="")
     print("\n|", end="")
     for i in range(10):
-        print(f"       {pokling_res[i][0]}|", end="")
+        print(f"       {miller_res[i][0]}|", end="")
     print("\n+", end="")
     for _ in range(10):
         print("--------+", end="")
     print("\n|", end="")
     for i in range(10):
-        print(f"{pokling_res[i][2]:8}|", end="")
+        print(f"{miller_res[i][2]:8}|", end="")
     print("\n+", end="")
     for _ in range(10):
         print("--------+", end="")
