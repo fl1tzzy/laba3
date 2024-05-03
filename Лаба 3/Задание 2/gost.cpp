@@ -5,7 +5,7 @@
 #include <algorithm>
 
 using namespace std;
-
+// решето эратосфена
 vector<int> primes(int n);
 int build_new_from_old(vector<int> prime, int bit);
 int power_mod(int a, int b, int n);
@@ -51,7 +51,7 @@ vector<int> primes(int n) {
 
     return primes;
 }
-
+//Алгоритм перехода от меньшего простого числа к большему
 int build_new_from_old(vector<int> prime, int bit) {
     int q;
     int max_index = 0;
